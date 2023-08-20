@@ -1,17 +1,18 @@
-const hello = ["Hello human! what\'s up?",
+const hello = [
+    "Hello human! what's up?",
     "hi, how are you doing?",
-    "What\'s up?",
+    "What's up?",
     "Ahoy matey! How are ye?",
-    "What\'s shaking?"
+    "What's shaking?"
   ],
-
-  joke = ["How many programmers does it take to change a light bulb? None, it\'s a hardware problem...",
-    "Why do mummies have trouble keeping friends? Because they\'re so wrapped up in themselves.",
+  joke = [
+    "How many programmers does it take to change a light bulb? None, it's a hardware problem...",
+    "Why do mummies have trouble keeping friends? Because they're so wrapped up in themselves.",
     "What did one ocean say to the other ocean? Nothing, they just waved.",
     "Two goldfish are in a tank. One turns to the other and says, Do you know how to drive this thing?",
-    "Why did the pirate buy an eye patch?  Because he couldn\'t afford an iPad!",
+    "Why did the pirate buy an eye patch?  Because he couldn't afford an iPad!",
     "What did the pirate say on his 80th birthday? Aye Matey!",
-    "Why don\'t scientists trust atoms? Because they make up everything."
+    "Why don't scientists trust atoms? Because they make up everything."
   ];
 
 // Store voices
@@ -22,25 +23,27 @@ const result = document.getElementById("result");
 const processing = document.getElementById("processing");
 
 // Wait on voices to be loaded before fetching list
-window.speechSynthesis.onvoiceschanged = () => { 
-  voices = window.speechSynthesis.getVoices(); 
+window.speechSynthesis.onvoiceschanged = () => {
+  voices = window.speechSynthesis.getVoices();
 };
 
 // Speech to Text
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
 let toggleBtn = null;
 if (typeof SpeechRecognition === "undefined") {
   startBtn.remove();
-  result.innerHTML = "<strong>Your browser does not support Speech API. Please download latest Chrome version.<strong>";
+  result.innerHTML =
+    "<strong>Your browser does not support Speech API. Please download latest Chrome version.<strong>";
 } else {
   const recognition = new SpeechRecognition();
   recognition.continuous = true; // If true, the silence period is longer
   recognition.interimResults = true;
-  recognition.onresult = event => {
+  recognition.onresult = (event) => {
     const current = event.resultIndex;
     const recognitionResult = event.results[current];
     const recognitionText = recognitionResult[0].transcript;
-	
+
     if (recognitionResult.isFinal) {
       processing.innerHTML = "processing ...";
 
@@ -87,16 +90,24 @@ function process(rawText) {
     response = getRandomItemFromArray(joke);
   } else if (text.includes("play") && text.includes("despacito")) {
     response = "Opened it in another tab";
-    window.open("https://www.youtube.com/watch?v=kJQP7kiw5Fk", "_blank", "noopener");
+    window.open(
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
+      "_blank",
+      "noopener"
+    );
   } else if (text.includes("flip") && text.includes("coin")) {
     response = Math.random() < 0.5 ? "heads" : "tails";
   } else if (text.includes("bye") || text.includes("stop")) {
     response = "Bye!!";
     toggleBtn();
-  } 
+  }
 
   if (!response) {
-    window.open(`http://google.com/search?q=${rawText.replace("search", "")}`, "_blank", "noopener");
+    window.open(
+      `http://google.com/search?q=${rawText.replace("search", "")}`,
+      "_blank",
+      "noopener"
+    );
     return `I found some information for ${rawText}`;
   }
 
@@ -106,10 +117,11 @@ function process(rawText) {
 function getRandomItemFromArray(array) {
   const randomItem = array[Math.floor(Math.random() * array.length)];
   return randomItem;
-};
+}
 
 // Set the text and voice attributes.
 function readOutLoud(message) {
+  /*
   const speech = new SpeechSynthesisUtterance();
   
   speech.text = message;
@@ -119,5 +131,25 @@ function readOutLoud(message) {
   speech.voice = voices[3];
 
   window.speechSynthesis.speak(speech);
+  */
+  var voice = getVoiceFromName("Google US English");
+  say(message, voice);
 }
 
+function getVoiceFromName(name) {
+  var foundVoice = null;
+
+  voices.forEach(function (voice, index) {
+    if (voice.name === name) {
+      foundVoice = voice;
+    }
+  });
+
+  return foundVoice;
+}
+
+function say(text, voice) {
+  var speech = new SpeechSynthesisUtterance(text);
+  speech.voice = voice;
+  speechSynthesis.speak(speech);
+}
